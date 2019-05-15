@@ -1,5 +1,6 @@
       //variables globales
       var num_adultos="";
+      var num_menores="";
       var cadenaInvertida="";
       var espacios=0;
       var tam_cadena=0;
@@ -14,8 +15,8 @@
         //empezar a reconocer voz
         speech.recognition.onstart = function()
         {   //inicializar variablesS cuando empiece hablar
-           num_adultos=cadenaInvertida=texto_dictado="";
-           espacios=tam_cadena=0;
+           num_adultos=num_menores=cadenaInvertida=texto_dictado="";
+           espacios=tam_cadena=comienzaEn=0;
 
             $('#capture').text("Parar");
             $('#capture').val("false");
@@ -31,52 +32,9 @@
             $('#output').text(texto_dictado);
 
             //-----------------------------------------------ADULTOS-------------------------------------------------------------------------------
-            //texto dictado buscar el texto adultoso adulto
-            if(texto_dictado.indexOf("adultos")!=-1){
-                var adultoEmpiezaEn=texto_dictado.indexOf("adultos");
-            }
-            if(texto_dictado.indexOf("adulto")!=-1){
-                var adultoEmpiezaEn=texto_dictado.indexOf("adulto");
-            }
-
-            //si encuentra la cadena
-            if(adultoEmpiezaEn!=-1)
-            {
-               //empezar a recorrer un for alrevez apartir de la posicion que empiez ala palabra adultos
-                adultos="";
-                espacios=0;
-                for(var i=(adultoEmpiezaEn-1);i>=0;i--){
-                  if(texto_dictado[i]==" "){ espacios++; }
-                  else{ //si no hay espacios alamcenar
-                        num_adultos+=texto_dictado[i];
-                      }
-                  if(espacios>=2){break;}//cuando encuentre dos espacios que representan el corte de cadena deja de concatenar a el numero de adultos
-                  //console.log("caracter= "+texto_dictado[i]);
-                  //console.log("espacios= "+espacios);
-                }
-
-                //si contiene datos la variable de numero de adultos
-                if(num_adultos!=""){
-                  var x=num_adultos.length;
-                  cadenaInvertida="";
-                  //console.log('n adulots== '+num_adultos);  console.log('n letras= '+x);
-                  while (x>=0) {
-                    cadenaInvertida +=num_adultos.charAt(x);
-                    x--;
-                  }
-                  cadenaInvertida=identificarCantidadNumerica(cadenaInvertida);//convertir el texto a Numero
-                  num_adultos=cadenaInvertida;
-                }
-            }
-
-
-          //-----------------------------------------------MENORES-------------------------------------------------------------------------------
-          if(texto_dictado.indexOf("menores")!=-1){
-              var adultoEmpiezaEn=texto_dictado.indexOf("menores");
-          }
-          if(texto_dictado.indexOf("menor")!=-1){
-              var adultoEmpiezaEn=texto_dictado.indexOf("menor");
-          }
+            num_adultos=identificarOcupacion("adultos","adulto",texto_dictado);
+            //-----------------------------------------------MENORES-------------------------------------------------------------------------------
+            num_menores=identificarOcupacion("menores","menor",texto_dictado);
 
 
             $('#capture').text("Hablar");
@@ -84,6 +42,7 @@
             $('#status').text("Inactivo");
             console.log('Termine de Escuchar .......');
             console.log('adultos='+num_adultos);
+            console.log('menores='+num_menores);
         }
 
         //Precionar el Boton
@@ -140,6 +99,72 @@
           console.log("webkitSpeechRecognition is not available.");
         }
       }
+
+
+
+      /*
+      *Metodo para separar las Ocupaciones
+      *recibe como parametro el texto clave en plural y singular y el texto dictado por el Usuario
+      */
+      function identificarOcupacion(claveP,claveS,texto_dictado)
+      {
+          //si no se dicto nada no ejecutar codigo
+          if(texto_dictado==""){ return 0; }
+
+          var ocupacion="";
+          //texto dictado  Evaluar y buscar el texto Indicado
+          if(texto_dictado.indexOf(claveP)!=-1){
+              comienzaEn=texto_dictado.indexOf(claveP);
+          }
+          else if(texto_dictado.indexOf(claveS)!=-1){
+              comienzaEn=texto_dictado.indexOf(claveS);
+          }
+          else{
+            comienzaEn=-1;//no se encuentra la palabra clave
+          }
+
+          //si encuentra la cadena
+          if(comienzaEn!=-1)
+          {
+             //console.log("encontre la clave"+claveP);
+             //empezar a recorrer apartir de la posicion que empieza la palabra clave en sentido inverso
+              espacios=0;
+              for(var i=(comienzaEn-1);i>=0;i--){
+                if(texto_dictado[i]==" "){ espacios++; }
+                else{ //si no hay espacios alamcenar
+                      ocupacion+=texto_dictado[i];
+                    }
+                if(espacios>=2){break;}//cuando encuentre dos espacios que representan el corte de cadena deja de concatenar a el numero de adultos
+              }
+
+              //si contiene datos la variable de numero de adultos
+              if(ocupacion!=""){
+                var x=ocupacion.length;
+                cadenaInvertida="";
+                //console.log('n adulots== '+num_adultos);  console.log('n letras= '+x);
+                while (x>=0) {
+                  cadenaInvertida +=ocupacion.charAt(x);
+                  x--;
+                }
+                cadenaInvertida=identificarCantidadNumerica(cadenaInvertida);//convertir el texto a Numero
+                //ocupacion=cadenaInvertida;
+
+                //si no es numerico
+                if(isNaN(cadenaInvertida)){
+                  cadenaInvertida=0;
+                }
+
+                return cadenaInvertida;//retornar el valor numerico
+              }
+          }
+          else{
+            //console.log("no se encontro la clave");
+            //si no se encuentra el texto Solicitado retornar cero
+            return 0;
+          }
+      }
+      //-----------------------------------------------------------------------------------------------------------------------
+
 
 
       /*

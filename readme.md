@@ -1,11 +1,10 @@
 
 ## Reconocimiento de Voz con SpeechRecognition library
-<h2>Reconocimiento de Voz</h2>
+
 <p>
-	permite el reconocimiento de voz 
+	permite el reconocimiento de palabras clave asignadas
 </p>
 
 - **[Autor]Manuel Alberto Flores Esparza**
-- **[Mail] albertomfe@gmail.com
-- **[Web]https://baulprogram.com.mx/
-
+- **[Mail] albertomfe@gmail.com**
+- **[Web]https://baulprogram.com.mx/**
